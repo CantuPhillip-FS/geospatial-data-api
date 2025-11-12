@@ -1,14 +1,15 @@
 import type { Request, Response } from "express";
 import { fetchData } from "../api/sunrise-sunset-api.js";
-// import Sun from "../models/Sun.js";
+import Sun from "../models/Sun.js";
+import { createUrl } from "../utils/createUrl.js";
 
-// type Data = {
-//   sunrise: String;
-//   sunset: String;
-//   timezone: String;
-//   longitude: String | Number;
-//   latitude: String | Number;
-// };
+type Data = {
+  sunrise: String;
+  sunset: String;
+  latitude: String | Number;
+  longitude: String | Number;
+  sunriseSunsetURL: String;
+};
 
 /* -------------------------------------------------------------------------- */
 /*                              GET: All Sun docs                             */
@@ -43,16 +44,21 @@ export const getAllSuns = async (req: Request, res: Response) => {
 /* -------------------------------------------------------------------------- */
 export const createSun = async (req: Request, res: Response) => {
   try {
+    // grab user's query
     const query = req.query;
+
+    // extract lat and lng
     const lat = query.lat as string;
     const lng = query.lng as string;
+
+    // ensure lat and lng are present else throw error
     if (lat === undefined || lng === undefined) {
       throw new Error(
         "Please include a query within your request. E.g., '/api/vi?lat=14.56&lng=-90.73'"
       );
     }
-    console.log(query);
 
+    // fetch data from sunset-sunrise api else throw error
     const data = await fetchData(lat, lng);
     if (data === undefined || data === null) {
       throw new Error(
@@ -60,20 +66,24 @@ export const createSun = async (req: Request, res: Response) => {
       );
     }
 
-    // const Data: Data = {
-    //   sunrise: data.results.sunrise,
-    //   sunset: data.results.sunset,
-    //   timezone: data.results.tzid,
-    //   latitude: lng,
-    //   longitude: lat,
-    // };
+    // create sunrise-sunset url
+    const url = createUrl(lat, lng);
 
-    // const newSun = await Sun.create(Data);
+    // create obj to be used to create mongodb doc
+    const Data: Data = {
+      sunrise: data.results.sunrise,
+      sunset: data.results.sunset,
+      latitude: lng,
+      longitude: lat,
+      sunriseSunsetURL: url,
+    };
+
+    // create doc
+    const newSun = await Sun.create(Data);
     res.status(201).json({
       message: `${req.method} - Request made`,
       success: true,
-      // data: newSun,
-      query,
+      data: newSun,
     });
   } catch (error: any) {
     res.status(500).json({

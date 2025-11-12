@@ -26,11 +26,11 @@ const sunSchema = new Schema(
       ],
       trim: true,
     },
-    timezone: {
+    latitude: {
       type: String,
       required: [
         true,
-        "Apologies. Timezone wasn't fetched. Please try again later. ",
+        "Latitude is required. Please add a query to the API URL, e.g., '/api/v1/sun?lat=35.68&lng=139.75'",
       ],
       trim: true,
     },
@@ -42,15 +42,7 @@ const sunSchema = new Schema(
       ],
       trim: true,
     },
-    latitude: {
-      type: String,
-      required: [
-        true,
-        "Latitude is required. Please add a query to the API URL, e.g., '/api/v1/sun?lat=35.68&lng=139.75'",
-      ],
-      trim: true,
-    },
-    sunsetSunriseURL: {
+    sunriseSunsetURL: {
       type: String,
       required: [
         true,
