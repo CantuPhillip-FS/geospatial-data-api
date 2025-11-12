@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import express from "express";
-// import sunRoutes from "./sunRoutes.js";
-
+import sunRoutes from "./sunRoutes.js";
 const router = express.Router();
 
 router.get("/", (req: Request, res: Response) => {
@@ -11,6 +10,6 @@ router.get("/", (req: Request, res: Response) => {
   });
 });
 
-// router.use("/sun", sunRoutes);
+router.use("/sun", sunRoutes);
 
 export default router;
