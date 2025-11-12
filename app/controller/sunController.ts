@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { fetchData } from "../api/sunrise-sunset-api.js";
 
 // for query params try
 // if(query !== Sun.find()) {
@@ -34,9 +35,16 @@ export const getAllSuns = async (req: Request, res: Response) => {
 /* -------------------------------------------------------------------------- */
 export const createSun = async (req: Request, res: Response) => {
   try {
+    const data = await fetchData(14.56, -90.73);
+    if (data === undefined || data === null) {
+      throw new Error(
+        "Error fetching data. Were longitude and latitude present and correct?"
+      );
+    }
     res.status(201).json({
       message: `${req.method} - Request made`,
       success: true,
+      data,
     });
   } catch (error: any) {
     res.status(500).json({
