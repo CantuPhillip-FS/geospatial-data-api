@@ -1,0 +1,27 @@
+{
+  "name": "3-2_geospatial-data-api_assignment",
+  "version": "1.0.0",
+  "description": "Full Sail University Server Side Languages Course Assignment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx watch server.ts",
+    "build": "node dist/server.js"
+  },
+  "keywords": [],
+  "author": "Phillip Cantu",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "morgan": "^1.10.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.5",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^24.10.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
