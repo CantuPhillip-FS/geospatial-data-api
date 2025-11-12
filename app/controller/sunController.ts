@@ -1,6 +1,18 @@
 import type { Request, Response } from "express";
 import { fetchData } from "../api/sunrise-sunset-api.js";
+// import Sun from "../models/Sun.js";
 
+// type Data = {
+//   sunrise: String;
+//   sunset: String;
+//   timezone: String;
+//   longitude: String | Number;
+//   latitude: String | Number;
+// };
+
+/* -------------------------------------------------------------------------- */
+/*                              GET: All Sun docs                             */
+/* -------------------------------------------------------------------------- */
 // for query params try
 // if(query !== Sun.find()) {
 //   includes select, or just remove commas
@@ -9,10 +21,6 @@ import { fetchData } from "../api/sunrise-sunset-api.js";
 
 // PLAN: Check to see if location already exists in MongoDB
 // If not, FETCH & SAVE new data
-
-/* -------------------------------------------------------------------------- */
-/*                              GET: All Sun docs                             */
-/* -------------------------------------------------------------------------- */
 
 export const getAllSuns = async (req: Request, res: Response) => {
   try {
@@ -35,16 +43,37 @@ export const getAllSuns = async (req: Request, res: Response) => {
 /* -------------------------------------------------------------------------- */
 export const createSun = async (req: Request, res: Response) => {
   try {
-    const data = await fetchData(14.56, -90.73);
-    if (data === undefined || data === null) {
+    const query = req.query;
+    const lat = query.lat as string;
+    const lng = query.lng as string;
+    if (lat === undefined || lng === undefined) {
       throw new Error(
-        "Error fetching data. Were longitude and latitude present and correct?"
+        "Please include a query within your request. E.g., '/api/vi?lat=14.56&lng=-90.73'"
       );
     }
+    console.log(query);
+
+    const data = await fetchData(lat, lng);
+    if (data === undefined || data === null) {
+      throw new Error(
+        "Error fetching data. Check correct lat & lng were given, e.g., '?lat=14.56&lng=-90.73'"
+      );
+    }
+
+    // const Data: Data = {
+    //   sunrise: data.results.sunrise,
+    //   sunset: data.results.sunset,
+    //   timezone: data.results.tzid,
+    //   latitude: lng,
+    //   longitude: lat,
+    // };
+
+    // const newSun = await Sun.create(Data);
     res.status(201).json({
       message: `${req.method} - Request made`,
       success: true,
-      data,
+      // data: newSun,
+      query,
     });
   } catch (error: any) {
     res.status(500).json({

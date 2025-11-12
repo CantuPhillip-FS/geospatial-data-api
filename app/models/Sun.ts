@@ -35,7 +35,7 @@ const sunSchema = new Schema(
       trim: true,
     },
     longitude: {
-      type: Number,
+      type: String,
       required: [
         true,
         "Longitude is required. Please add a query to the API URL, e.g., '/api/v1/sun?lat=35.68&lng=139.75'",
@@ -43,7 +43,7 @@ const sunSchema = new Schema(
       trim: true,
     },
     latitude: {
-      type: Number,
+      type: String,
       required: [
         true,
         "Latitude is required. Please add a query to the API URL, e.g., '/api/v1/sun?lat=35.68&lng=139.75'",

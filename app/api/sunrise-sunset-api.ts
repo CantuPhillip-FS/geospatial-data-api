@@ -13,7 +13,7 @@ export const fetchData = async (lat: string | number, lng: string | number) => {
   }
 };
 
-// Example expected data object:
+// Example expected MY API response:
 /* 
 
 {
