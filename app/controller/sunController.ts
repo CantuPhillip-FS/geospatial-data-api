@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { fetchData } from "../api/sunrise-sunset-api.js";
 import Sun from "../models/Sun.js";
+import { checkForExistingData } from "../utils/checkDuplicates.js";
 import { createUrl } from "../utils/createUrl.js";
 
 type Data = {
@@ -14,22 +15,13 @@ type Data = {
 /* -------------------------------------------------------------------------- */
 /*                              GET: All Sun docs                             */
 /* -------------------------------------------------------------------------- */
-// for query params try
-// if(query !== Sun.find()) {
-//   includes select, or just remove commas
-//   no need for $ for gte, lt, etc
-// };
-
-// PLAN: Check to see if location already exists in MongoDB
-// If not, FETCH & SAVE new data
-
 export const getAllSuns = async (req: Request, res: Response) => {
   try {
-    // const suns = await Sun.find({});
+    const suns = await Sun.find({ latitude: "139.75" });
     res.status(200).json({
       message: `${req.method} - Request made`,
       success: true,
-      // sunRiseAndSetInfo: suns,
+      sunRiseAndSetInfo: suns,
     });
   } catch (error: any) {
     res.status(500).json({
@@ -58,6 +50,22 @@ export const createSun = async (req: Request, res: Response) => {
       );
     }
 
+    // Before fetching I need to check for existing LNG/LAT combo
+    // Run the checkForExistingData util function
+    const existingData = await checkForExistingData(lat, lng);
+    if (existingData) {
+      res.status(500).json({
+        message: `${req.method} - Request made`,
+        success: false,
+        reason: `DUPLICATE: Data with latitude: ${lat} and longitude ${lng} exists. Please send a GET request or a different POST request.`,
+        existingData,
+      });
+      console.log("Data already exists. No POST performed");
+      return;
+    }
+    // THIS WHOLE CHECKING FOR DUPLICATE WAS THE HARDEST THING IN THIS ENTIRE APP 😭
+    // BUT I FIGURED IT OUT 💪
+
     // fetch data from sunset-sunrise api else throw error
     const data = await fetchData(lat, lng);
     if (data === undefined || data === null) {
@@ -67,14 +75,14 @@ export const createSun = async (req: Request, res: Response) => {
     }
 
     // create sunrise-sunset url
-    const url = createUrl(lat, lng);
+    const url = await createUrl(lat, lng);
 
     // create obj to be used to create mongodb doc
     const Data: Data = {
       sunrise: data.results.sunrise,
       sunset: data.results.sunset,
-      latitude: lng,
-      longitude: lat,
+      latitude: lat,
+      longitude: lng,
       sunriseSunsetURL: url,
     };
 
