@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import mongoose from "mongoose";
 import { fetchData } from "../api/sunrise-sunset-api.js";
 import Sun from "../models/Sun.js";
 import { checkExistingData } from "../utils/checkExistingData.js";
@@ -13,7 +14,7 @@ type Data = {
 };
 
 /* -------------------------------------------------------------------------- */
-/*                              GET: All Sun docs                             */
+/*                                GET: All Data                               */
 /* -------------------------------------------------------------------------- */
 export const getAllSuns = async (req: Request, res: Response) => {
   try {
@@ -26,17 +27,19 @@ export const getAllSuns = async (req: Request, res: Response) => {
 
     // ensure lat and lng are present else throw error
     if (lat === undefined || lng === undefined) {
-      throw new Error(
-        "Please include a query within your request. E.g., '/api/v1/geo-data?lat=14.56&lng=-90.73'"
-      );
+      const data = await Sun.find();
+      console.log("GET all EXISTING data.");
+      res.status(200).json({
+        message: `${req.method} - Reqeust made`,
+        status: "successful",
+        data,
+      });
+    }
 
-      // const data = await Sun.find();
-      // console.log("GET all EXISTING data.");
-      // res.status(200).json({
-      //   message: `${req.method} - Reqeust made`,
-      //   status: "successful",,
-      //   data,
-      // });
+    if (lat === "" || lng == "") {
+      throw new Error(
+        "Please include a full query within your request. E.g., '/api/v1/geo-data?lat=14.56&lng=-90.73'"
+      );
     }
 
     // Before fetching I need to check for existing LNG/LAT combo
@@ -89,7 +92,41 @@ export const getAllSuns = async (req: Request, res: Response) => {
 };
 
 /* -------------------------------------------------------------------------- */
-/*                              POST: Add Sun doc                             */
+/*                               GET: Data by id                              */
+/* -------------------------------------------------------------------------- */
+export const getDataById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    // Validate the ObjectId format BEFORE querying
+    if (!mongoose.Types.ObjectId.isValid(id!)) {
+      return res.status(400).json({
+        message: `Invalid MongoDB ObjectId: ${id}`,
+        status: "failed",
+      });
+    }
+    const foundData = await Sun.findById(id)
+      .select("-createdAt -updatedAt -__v")
+      .exec();
+    if (!foundData) {
+      return res.status(404).json({
+        message: `No data found with id: ${id}`,
+        status: "failed",
+      });
+    }
+    res.status(200).json({
+      message: `${req.method} - request to Studio endpoint`,
+      status: "successful",
+      data: foundData,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+/* -------------------------------------------------------------------------- */
+/*                              POST: Add new doc                             */
 /* -------------------------------------------------------------------------- */
 export const createSun = async (req: Request, res: Response) => {
   try {
