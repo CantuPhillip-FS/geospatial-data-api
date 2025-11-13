@@ -10,6 +10,6 @@ router.get("/", (req: Request, res: Response) => {
   });
 });
 
-router.use("/sun", sunRoutes);
+router.use("/geo-data", sunRoutes);
 
 export default router;

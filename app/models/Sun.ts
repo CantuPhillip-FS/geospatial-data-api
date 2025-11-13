@@ -6,11 +6,11 @@ const sunSchema = new Schema(
       type: String,
       required: [
         true,
-        "Apologies. Sunrise time is required and wasn't properly fetched. Please try again later.",
+        "Time of sunrise is required, e.g, 'sunrise': '9:15:07 PM'",
       ],
       match: [
         /^(?:0?[1-9]|1[0-2]):[0-5]\d:[0-5]\d\s?(?:AM|PM)$/i,
-        "Apologies. Sunrise time wasn't fetched in the proper format. Please try again later.",
+        "Please follow this example: 'sunrise': '9:15:07 PM'",
       ],
       trim: true,
     },
@@ -18,40 +18,27 @@ const sunSchema = new Schema(
       type: String,
       required: [
         true,
-        "Apologies. Sunset time is required and wasn't properly fetched. Please try again later.",
+        "Time of sunset is required, e.g, 'sunset': '7:38:54 AM'",
       ],
       match: [
         /^(?:0?[1-9]|1[0-2]):[0-5]\d:[0-5]\d\s?(?:AM|PM)$/i,
-        "Apologies. Sunset time wasn't fetched in the proper format. Please try again later.",
+        "Please follow this example: 'sunset': '7:38:54 AM'",
       ],
       trim: true,
     },
     latitude: {
       type: String,
-      required: [
-        true,
-        "Latitude is required. Please add a query to the API URL, e.g., '/api/v1/sun?lat=35.68&lng=139.75'",
-      ],
+      required: [true, "Latitude is required, e.g., 'latitude': '35.68'"],
       trim: true,
     },
     longitude: {
       type: String,
-      required: [
-        true,
-        "Longitude is required. Please add a query to the API URL, e.g., '/api/v1/sun?lat=35.68&lng=139.75'",
-      ],
+      required: [true, "Longitude is required, e.g., 'longitude': '139.75'"],
       trim: true,
     },
     sunriseSunsetURL: {
       type: String,
-      required: [
-        true,
-        "Apologies. The URL for fetching your requested data couldn't be constructed. Please try again later.",
-      ],
-      match: [
-        /^https:\/\/api\.sunrise-sunset\.org\/json\?lat=(-?\d{1,3}(?:\.\d{1,3})?)&lng=(-?\d{1,3}(?:\.\d{1,3})?)$/,
-        "Apologies. Something went wrong with validating the given longitude and latitude. Please follow this example when making your request: '/api/v1/sun?lat=35.68&lng=139.75'",
-      ],
+      required: true,
       trim: true,
     },
   },
