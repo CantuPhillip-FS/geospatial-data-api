@@ -19,7 +19,46 @@ type Data = {
 export const getAllSuns = async (req: Request, res: Response) => {
   try {
     // grab user's query
-    const query = req.query;
+    const query: any = req.query;
+
+    // Check if user passed a select query
+    if (query.select) {
+      console.log("SELECT found in query");
+      const fieldsIncluded = query.select.split(",").join(" ");
+      try {
+        const data = await Sun.find().select(fieldsIncluded);
+        return res.status(200).json({
+          message: `${req.method} - Request made`,
+          status: "successful",
+          data,
+        });
+      } catch (error) {
+        return res.status(500).json({
+          message: `${req.method} - Request made`,
+          status: "failed",
+          error,
+        });
+      }
+    }
+
+    // Check if user passed a sort query
+    if (query.sort) {
+      console.log("SORT found in query");
+      const sortBy = query.sort.split(",").join(" ");
+      try {
+        const data = await Sun.find().sort(sortBy);
+        return res.status(200).json({
+          message: `${req.method} - Request made`,
+          status: "successful",
+          data,
+        });
+      } catch (error) {
+        return res.status(500).json({
+          message: `${req.method} - Request made`,
+          status: "failed",
+        });
+      }
+    }
 
     // extract lat and lng
     const lat = query.lat as string;
@@ -30,7 +69,7 @@ export const getAllSuns = async (req: Request, res: Response) => {
       const data = await Sun.find().select("-createdAt -updatedAt -__v").exec();
       console.log("GET all EXISTING data.");
       return res.status(200).json({
-        message: `${req.method} - Reqeust made`,
+        message: `${req.method} - Request made`,
         status: "successful",
         data,
       });
