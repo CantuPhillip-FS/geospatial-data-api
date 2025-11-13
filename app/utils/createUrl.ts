@@ -5,7 +5,7 @@ import "dotenv/config";
 const BASE_URL: string | undefined = process.env.SUNSET_RISE_URL;
 // BASE_URL = https://api.sunrise-sunset.org/json?
 
-export const createUrl = (lat: string | number, lng: string | number) => {
+export const createUrl = (lat: string, lng: string) => {
   const url = `${BASE_URL}lat=${lat}&lng=${lng}`;
   return url;
 };

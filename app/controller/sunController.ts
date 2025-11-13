@@ -7,8 +7,8 @@ import { createUrl } from "../utils/createUrl.js";
 type Data = {
   sunrise: String;
   sunset: String;
-  latitude: String | Number;
-  longitude: String | Number;
+  latitude: String;
+  longitude: String;
   sunriseSunsetURL: String;
 };
 
