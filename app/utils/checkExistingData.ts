@@ -5,7 +5,9 @@ import Sun from "../models/Sun.js";
 
 export const checkExistingData = async (lat: string, lng: string) => {
   try {
-    const existingData = await Sun.find({ latitude: lat, longitude: lng });
+    const existingData = await Sun.find({ latitude: lat, longitude: lng })
+      .select("-createdAt -updatedAt -__v")
+      .exec();
     return existingData;
   } catch (error) {
     return error;

@@ -27,7 +27,7 @@ export const getAllSuns = async (req: Request, res: Response) => {
 
     // ensure lat and lng are present else throw error
     if (lat === undefined || lng === undefined) {
-      const data = await Sun.find();
+      const data = await Sun.find().select("-createdAt -updatedAt -__v").exec();
       console.log("GET all EXISTING data.");
       return res.status(200).json({
         message: `${req.method} - Reqeust made`,
