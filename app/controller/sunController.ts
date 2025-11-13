@@ -29,7 +29,7 @@ export const getAllSuns = async (req: Request, res: Response) => {
     if (lat === undefined || lng === undefined) {
       const data = await Sun.find();
       console.log("GET all EXISTING data.");
-      res.status(200).json({
+      return res.status(200).json({
         message: `${req.method} - Reqeust made`,
         status: "successful",
         data,
@@ -46,13 +46,12 @@ export const getAllSuns = async (req: Request, res: Response) => {
     // Run the checkExistingData util function
     const existingData: any = await checkExistingData(lat, lng);
     if (existingData.length > 0) {
-      res.status(200).json({
+      console.log("Data already exists. No FETCH performed");
+      return res.status(200).json({
         message: `${req.method} - Request made`,
         status: "successful",
         existingData: existingData,
       });
-      console.log("Data already exists. No FETCH performed");
-      return;
     }
     // THIS WHOLE CHECKING FOR DUPLICATE WAS THE HARDEST THING IN THIS ENTIRE APP 😭
     // BUT I FIGURED IT OUT 💪
@@ -76,15 +75,15 @@ export const getAllSuns = async (req: Request, res: Response) => {
       longitude: lng,
       sunriseSunsetURL: url,
     };
-
-    res.status(200).json({
+    console.log("New API call was sent");
+    return res.status(200).json({
       message: `${req.method} - Request made`,
       request: "successful",
       fetch: "successful",
       data: Data,
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       message: error.message,
       status: "failed",
     });
@@ -113,13 +112,13 @@ export const getDataById = async (req: Request, res: Response) => {
         status: "failed",
       });
     }
-    res.status(200).json({
+    return res.status(200).json({
       message: `${req.method} - request to Studio endpoint`,
       status: "successful",
       data: foundData,
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       message: error.message,
     });
   }
@@ -131,7 +130,7 @@ export const getDataById = async (req: Request, res: Response) => {
 export const createSun = async (req: Request, res: Response) => {
   try {
     if (!req.body) {
-      res.status(500).json({
+      return res.status(400).json({
         message: `${req.method} - Request made`,
         status: "failed",
         reason: "No data was received",
@@ -148,14 +147,15 @@ export const createSun = async (req: Request, res: Response) => {
       // existingData itself will always return, it's never undefined nor null
       // after extensive testing it always returns as an array, just empty if no data
       // therefore it always has a .length property that I can utilize
-      res.status(500).json({
+      console.log("Data already exists. No POST performed");
+      return res.status(400).json({
+        // Technically should be a 409 status code but after some online research
+        // Seems it's not common and I just wanted to stay consistent in this app
         message: `${req.method} - Request made`,
         status: "failed",
         reason: `DUPLICATE: Data with latitude: ${lat} and longitude ${lng} exists. Please send a GET request or a different POST request.`,
         data: existingData,
       });
-      console.log("Data already exists. No POST performed");
-      return;
     }
 
     // fetch data from sunset-sunrise api else throw error
@@ -180,13 +180,14 @@ export const createSun = async (req: Request, res: Response) => {
 
     // create doc
     const newSun = await Sun.create(Data);
-    res.status(201).json({
+    console.log("New data is POST into db");
+    return res.status(201).json({
       message: `${req.method} - Request made`,
       status: "successful",
       data: newSun,
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       message: error.message,
       status: "failed",
     });
